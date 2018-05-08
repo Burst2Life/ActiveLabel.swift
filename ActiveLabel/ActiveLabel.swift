@@ -341,30 +341,10 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
         for (type, elements) in activeElements {
 
             switch type {
-            case .mention:
-                attributes[NSAttributedStringKey.font] = mentionFont ?? font!
-                attributes[NSAttributedStringKey.foregroundColor] = mentionColor
-                attributes[NSAttributedStringKey.underlineStyle] = mentionUnderlineStyle.rawValue
-            case .hashtag:
-                attributes[NSAttributedStringKey.font] = hashtagFont ?? font!
-                attributes[NSAttributedStringKey.foregroundColor] = hashtagColor
-                attributes[NSAttributedStringKey.underlineStyle] = hashtagUnderlineStyle.rawValue
-            case .url:
-                attributes[NSAttributedStringKey.font] = URLFont ?? font!
-                attributes[NSAttributedStringKey.foregroundColor] = URLColor
-                attributes[NSAttributedStringKey.underlineStyle] = URLUnderlineStyle.rawValue
-            case .custom:
-                attributes[NSAttributedStringKey.font] = customFont[type] ?? defaultCustomFont
-                attributes[NSAttributedStringKey.foregroundColor] = customColor[type] ?? defaultCustomColor
-                attributes[NSAttributedStringKey.underlineStyle] = customUnderlineStyle[type]?.rawValue ?? defaultCustomUnderlineStyle
-            }
-            
-            // fix: seems that we lose the font during the tap so we need to set it again
-            switch type {
-            case .mention: attributes[NSAttributedStringKey.font] = mentionFont ?? font!
-            case .hashtag: attributes[NSAttributedStringKey.font] = hashtagFont ?? font!
-            case .url: attributes[NSAttributedStringKey.font] = URLFont ?? font!
-            case .custom: attributes[NSAttributedStringKey.font] = customFont[type] ?? defaultCustomFont
+            case .mention: attributes[NSAttributedStringKey.foregroundColor] = mentionColor
+            case .hashtag: attributes[NSAttributedStringKey.foregroundColor] = hashtagColor
+            case .url: attributes[NSAttributedStringKey.foregroundColor] = URLColor
+            case .custom: attributes[NSAttributedStringKey.foregroundColor] = customColor[type] ?? defaultCustomColor
             }
             
             if let highlightFont = hightlightFont {
@@ -388,7 +368,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
         var textRange = NSRange(location: 0, length: textLength)
 
         if enabledTypes.contains(.url) {
-            let tuple = ActiveBuilder.createURLElements(from: textString, range: textRange, maximumLenght: urlMaximumLength)
+            let tuple = ActiveBuilder.createURLElements(from: textString, range: textRange, maximumLength: urlMaximumLength)
             let urlElements = tuple.0
             let finalText = tuple.1
             textString = finalText
