@@ -21,6 +21,10 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
     // MARK: - public properties
     open weak var delegate: ActiveLabelDelegate?
 
+    open var customAttributes: [NSAttributedStringKey : Any]?
+    
+    open var customAttributesRange: NSRange?
+    
     open var enabledTypes: [ActiveType] = [.mention, .hashtag, .url]
 
     open var urlMaximumLength: Int?
@@ -140,7 +144,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
     }
 
     override open var attributedText: NSAttributedString? {
-        didSet { updateTextStorage() }
+        didSet { updateTextStorage(parseText: true, customAttributes: self.customAttributes, customRange: self.customAttributesRange) }
     }
     
     override open var font: UIFont! {
@@ -287,7 +291,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
         isUserInteractionEnabled = true
     }
 
-    fileprivate func updateTextStorage(parseText: Bool = true) {
+    fileprivate func updateTextStorage(parseText: Bool = true, customAttributes: [NSAttributedStringKey: Any]? = nil, customRange: NSRange? = nil) {
         if _customizing { return }
         // clean up previous active elements
         guard let attributedText = attributedText, attributedText.length > 0 else {
@@ -303,12 +307,14 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             clearActiveElements()
             let newString = parseTextAndExtractActiveElements(mutAttrString)
             mutAttrString.mutableString.setString(newString)
-            attributedText.enumerateAttributes(in: NSRange(location: 0, length: attributedText.length), options: .longestEffectiveRangeNotRequired, using: { (attribute, range, stop) in
-                mutAttrString.addAttributes(attribute, range: range)
-            })
         }
 
         addLinkAttribute(mutAttrString)
+        
+        if let attributes = customAttributes, let customRange = customRange {
+            mutAttrString.addAttributes(attributes, range: customRange)
+        }
+        
         textStorage.setAttributedString(mutAttrString)
         _customizing = true
         text = mutAttrString.string
