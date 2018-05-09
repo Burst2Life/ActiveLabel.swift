@@ -348,12 +348,20 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
         attributes[NSAttributedStringKey.foregroundColor] = mentionColor
 
         for (type, elements) in activeElements {
-
+            
             switch type {
-            case .mention: attributes[NSAttributedStringKey.foregroundColor] = mentionColor
-            case .hashtag: attributes[NSAttributedStringKey.foregroundColor] = hashtagColor
-            case .url: attributes[NSAttributedStringKey.foregroundColor] = URLColor
-            case .custom: attributes[NSAttributedStringKey.foregroundColor] = customColor[type] ?? defaultCustomColor
+            case .mention:
+                attributes[.font] = mentionFont ?? font!
+                attributes[.foregroundColor] = mentionColor
+            case .hashtag:
+                attributes[.font] = hashtagFont ?? font!
+                attributes[.foregroundColor] = hashtagColor
+            case .url:
+                attributes[.font] = URLFont ?? font!
+                attributes[.foregroundColor] = URLColor
+            case .custom:
+                attributes[.font] = customFont[type] ?? font!
+                attributes[.foregroundColor] = customColor[type] ?? defaultCustomColor
             }
             
             if let highlightFont = hightlightFont {
